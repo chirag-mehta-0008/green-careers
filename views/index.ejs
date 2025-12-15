@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCareers - Sustainability Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+
+    <nav class="bg-emerald-800 p-4 shadow-lg text-white sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold tracking-wide flex items-center gap-2">
+                🌱 Eco<span class="text-emerald-200">Careers</span>
+            </a>
+            </div>
+    </nav>
+
+    <div class="bg-white border-b border-gray-200 py-10">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-emerald-900 mb-2 text-center md:text-left">Find a Job That Saves the Planet 🌍</h2>
+            <p class="text-gray-500 mb-8 text-center md:text-left">Curated opportunities in ESG, Renewable Energy, and Sustainability.</p>
+            
+            <form action="/" method="GET" class="flex flex-col md:flex-row gap-4 bg-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm">
+                
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-emerald-700 uppercase mb-1">Job Title / Keyword</label>
+                    <input type="text" name="keyword" value="<%= searchParams.keyword %>" placeholder="e.g. Solar, Wind, ESG Analyst..." 
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                </div>
+
+                <div class="w-full md:w-48">
+                    <label class="block text-xs font-bold text-emerald-700 uppercase mb-1">Work Type</label>
+                    <select name="job_type" class="w-full p-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-emerald-500">
+                        <option value="" <%= searchParams.job_type === '' ? 'selected' : '' %>>Any Type</option>
+                        <option value="Remote" <%= searchParams.job_type === 'Remote' ? 'selected' : '' %>>🏠 Remote</option>
+                        <option value="Hybrid" <%= searchParams.job_type === 'Hybrid' ? 'selected' : '' %>>🏢 Hybrid</option>
+                        <option value="On-site" <%= searchParams.job_type === 'On-site' ? 'selected' : '' %>>📍 On-site</option>
+                    </select>
+                </div>
+
+                <div class="w-full md:w-48">
+                    <label class="block text-xs font-bold text-emerald-700 uppercase mb-1">Location</label>
+                    <select name="location" class="w-full p-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-emerald-500">
+                        <option value="India" <%= searchParams.location === 'India' ? 'selected' : '' %>>🇮🇳 India</option>
+                        <option value="USA" <%= searchParams.location === 'USA' ? 'selected' : '' %>>🇺🇸 USA</option>
+                        <option value="UK" <%= searchParams.location === 'UK' ? 'selected' : '' %>>🇬🇧 UK</option>
+                        <option value="Canada" <%= searchParams.location === 'Canada' ? 'selected' : '' %>>🇨🇦 Canada</option>
+                        <option value="Germany" <%= searchParams.location === 'Germany' ? 'selected' : '' %>>🇩🇪 Germany</option>
+                        <option value="Australia" <%= searchParams.location === 'Australia' ? 'selected' : '' %>>🇦🇺 Australia</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition shadow-md w-full md:w-auto">
+                        Search
+                    </button>
+                    <a href="/" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg transition text-center w-full md:w-auto">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        
+        <p class="text-sm text-gray-500 mb-4 ml-1">
+            Found <span class="font-bold text-emerald-800"><%= jobs ? jobs.length : 0 %></span> green opportunities.
+        </p>
+
+        <div id="jobs-container" class="grid gap-5 min-h-[500px] content-start">
+            <% if(jobs && jobs.length > 0) { %>
+                <% jobs.forEach((job, index) => { %>
+                    <div class="job-card bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-gray-100 border-l-4 border-l-emerald-500 group hidden fade-in" data-index="<%= index %>">
+                        <div class="flex flex-col md:flex-row justify-between gap-4">
+                            <div class="flex-1">
+                                <h4 class="text-xl font-bold text-gray-800 group-hover:text-emerald-700 transition"><%= job.job_title %></h4>
+                                <div class="flex items-center gap-2 mt-2 text-sm font-medium text-gray-600">
+                                    <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded"><%= job.employer_name %></span>
+                                    <span>•</span>
+                                    <span><%= job.job_city || 'Remote' %>, <%= job.job_country %></span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-3 line-clamp-2 leading-relaxed">
+                                    <%= job.job_description ? job.job_description.substring(0, 200) : 'No description available.' %>...
+                                </p>
+                            </div>
+                            <div class="flex flex-col justify-center gap-3 min-w-[150px]">
+                                <a href="/job?id=<%= encodeURIComponent(job.job_id) %>" class="text-emerald-700 border border-emerald-600 hover:bg-emerald-50 text-center px-4 py-2 rounded-lg text-sm font-bold transition">
+                                    View Details
+                                </a>
+                                <a href="<%= job.job_apply_link %>" target="_blank" class="bg-emerald-600 text-white hover:bg-emerald-700 text-center px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm">
+                                    Apply Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300">
+                    <h3 class="text-xl font-bold text-gray-600">No jobs found 🌱</h3>
+                    <p class="text-gray-400 mt-2">Try searching for 'Solar', 'Wind', or 'Analyst'.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <% if(jobs && jobs.length > 0) { %>
+        <div class="flex justify-center items-center gap-4 mt-12 pb-10">
+            <button id="prevBtn" onclick="changePage(-1)" class="bg-white border border-gray-300 px-5 py-2 rounded-lg shadow-sm hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">
+                &larr; Previous
+            </button>
+            <span id="pageIndicator" class="text-gray-600 font-medium">Page 1</span>
+            <button id="nextBtn" onclick="changePage(1)" class="bg-white border border-gray-300 px-5 py-2 rounded-lg shadow-sm hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">
+                Next &rarr;
+            </button>
+        </div>
+        <% } %>
+    </div>
+
+    <script>
+        const cardsPerPage = 10;
+        let currentPage = 1;
+        const allCards = document.querySelectorAll('.job-card');
+        const totalCards = allCards.length;
+        const totalPages = Math.ceil(totalCards / cardsPerPage);
+
+        function showPage(page) {
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentPage = page;
+            const start = (page - 1) * cardsPerPage;
+            const end = start + cardsPerPage;
+            allCards.forEach((card, index) => {
+                if (index >= start && index < end) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevBtn').disabled = (currentPage === 1);
+            document.getElementById('nextBtn').disabled = (currentPage === totalPages);
+            document.getElementById('jobs-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        function changePage(direction) { showPage(currentPage + direction); }
+        if (totalCards > 0) showPage(1);
+    </script>
+</body>
+</html>
