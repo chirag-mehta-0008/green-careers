@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoCareers - Pro</title>
+    <title>EcoCareers - Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -18,8 +18,10 @@
             <h1 class="text-2xl font-bold flex items-center gap-2">
                 <i class="fas fa-leaf text-emerald-400"></i> Eco<span class="text-emerald-200">Careers</span>
             </h1>
-            <div class="text-xs bg-emerald-800 px-4 py-1.5 rounded-full border border-emerald-700">
-                Found <%= results ? results.length : 0 %> Opportunities
+            <div class="flex gap-3">
+                <div class="text-xs bg-emerald-800 px-4 py-1.5 rounded-full border border-emerald-700 flex items-center gap-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div> Live
+                </div>
             </div>
         </div>
     </nav>
@@ -27,6 +29,7 @@
     <div class="bg-white border-b border-gray-200 py-8 shadow-sm">
         <div class="container mx-auto px-4 max-w-6xl">
             <form action="/" method="GET" class="flex flex-col gap-6">
+                
                 <div class="flex justify-center p-1 bg-gray-100 rounded-xl w-fit mx-auto border border-gray-200">
                     <label class="cursor-pointer">
                         <input type="radio" name="source" value="linkedin" class="peer sr-only" <%= source === 'linkedin' ? 'checked' : '' %> onchange="this.form.submit()">
@@ -41,6 +44,7 @@
                         </div>
                     </label>
                 </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100">
                     <input type="text" name="keyword" value="<%= searchParams.keyword %>" class="p-3 rounded-lg border border-gray-300 outline-none" placeholder="Keyword">
                     <select name="work_type" class="p-3 rounded-lg border border-gray-300 bg-white outline-none">
@@ -54,21 +58,28 @@
                         <option value="USA" <%= searchParams.location === 'USA' ? 'selected' : '' %>>🇺🇸 USA</option>
                         <option value="UK" <%= searchParams.location === 'UK' ? 'selected' : '' %>>🇬🇧 UK</option>
                     </select>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition">Find Jobs</button>
+                    
+                    <div class="flex gap-2">
+                        <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition">
+                            Search
+                        </button>
+                        
+                        <button type="submit" name="refresh" value="true" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition" title="Fetch Fresh Data from API">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="container mx-auto px-4 py-8 flex-grow max-w-5xl">
-        
         <% if(error || results.length === 0) { %>
             <div class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300">
                 <h3 class="text-xl font-bold text-gray-500">No jobs found 🌱</h3>
-                <p class="text-gray-400 mt-2">Trying searching for broader terms.</p>
+                <p class="text-gray-400 mt-2">Try refreshing or changing filters.</p>
             </div>
         <% } else { %>
-            
             <div id="jobs-container" class="grid gap-6 <%= source === 'linkedin' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2' %>">
                 <% if(source === 'linkedin') { %>
                     <% results.forEach((job, index) => { %>
@@ -79,7 +90,7 @@
                                     <h3 class="font-bold text-lg text-gray-800 group-hover:text-emerald-700 leading-tight mb-1"><%= job.job_title %></h3>
                                     <p class="text-sm font-medium text-gray-500"><i class="far fa-building mr-1"></i> <%= job.employer_name %></p>
                                 </div>
-                                <img src="<%= job.employer_logo || 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' %>" class="w-8 h-8 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2910/2910791.png'">
+                                <img src="<%= job.employer_logo || 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' %>" class="w-8 h-8 object-contain">
                             </div>
                             <div class="flex items-center gap-3 text-xs text-gray-500 mb-5">
                                 <span class="bg-gray-100 px-2 py-1 rounded"><i class="fas fa-map-marker-alt mr-1"></i> <%= job.job_city || 'Remote' %></span>
@@ -110,12 +121,11 @@
                 <span id="pageIndicator" class="text-gray-600 font-bold">Page 1</span>
                 <button id="nextBtn" onclick="changePage(1)" class="px-5 py-2 rounded-lg bg-emerald-600 text-white font-bold disabled:opacity-50 hover:bg-emerald-700">Next</button>
             </div>
-
         <% } %>
     </div>
 
     <script>
-        const cardsPerPage = 10; // Sirf 10 dikhenge
+        const cardsPerPage = 10;
         let currentPage = 1;
         const allCards = document.querySelectorAll('.job-card');
         const totalCards = allCards.length;
@@ -141,16 +151,11 @@
             document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
             document.getElementById('prevBtn').disabled = (currentPage === 1);
             document.getElementById('nextBtn').disabled = (currentPage === totalPages);
-            
-            // Scroll to top of results
             document.getElementById('jobs-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function changePage(dir) { showPage(currentPage + dir); }
-
-        // Start
         if (totalCards > 0) showPage(1);
     </script>
-
 </body>
 </html>
