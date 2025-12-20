@@ -3,275 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoCareers - Premium Hub</title>
+    <title>EcoCareers - Pro Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Outfit', sans-serif; }
-        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-sidebar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-right: 1px solid rgba(0, 0, 0, 0.05); }
+        .active-nav { background: #ecfdf5; color: #059669; border-right: 4px solid #059669; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f0fdf4; }
-        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #059669; }
+        /* Mobile Active State (Green Pill) */
+        .mobile-active { background-color: #10b981; color: white; border-color: #10b981; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); }
+        
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen flex flex-col text-slate-800">
+<body class="bg-gray-50 text-slate-800 flex h-screen overflow-hidden">
 
-    <nav class="fixed top-0 w-full z-50 transition-all duration-300">
-        <div class="absolute inset-0 bg-emerald-900/90 backdrop-blur-md shadow-lg"></div>
-        <div class="container mx-auto px-6 py-4 relative flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold flex items-center gap-2 group">
-                <div class="bg-white/10 p-2 rounded-lg group-hover:bg-white/20 transition">
-                    <i class="fas fa-leaf text-emerald-400"></i>
-                </div>
-                <span class="text-white tracking-tight">Eco<span class="text-emerald-300">Careers</span></span>
-            </a>
-            
-            <div class="hidden md:flex items-center gap-2 bg-emerald-800/50 px-4 py-1.5 rounded-full border border-emerald-500/30">
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <span class="text-emerald-100 text-xs font-semibold tracking-wider">LIVE FEED</span>
+    <% 
+    const categories = [
+        { name: 'ESG', icon: 'fa-globe-americas', label: 'ESG & Green' },
+        { name: 'Developer', icon: 'fa-code', label: 'Dev & Tech' },
+        { name: 'Business', icon: 'fa-briefcase', label: 'Business' },
+        { name: 'Marketing', icon: 'fa-bullhorn', label: 'Marketing' },
+        { name: 'Data', icon: 'fa-chart-pie', label: 'Data & AI' },
+        { name: 'Remote', icon: 'fa-laptop-house', label: 'Remote' }
+    ];
+    %>
+
+    <aside class="w-64 glass-sidebar h-full flex-col hidden md:flex z-20 shadow-xl">
+        <div class="h-20 flex items-center px-8 border-b border-gray-100 bg-white/50">
+            <i class="fas fa-leaf text-emerald-500 text-2xl mr-2"></i>
+            <span class="text-xl font-bold tracking-tight text-gray-800">Eco<span class="text-emerald-500">Careers</span></span>
+        </div>
+        <div class="flex-1 overflow-y-auto py-6">
+            <p class="px-6 text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Quick Filters</p>
+            <nav class="space-y-1">
+                <% categories.forEach(cat => { %>
+                    <a href="/app?source=<%= source %>&category=<%= cat.name %>" 
+                       class="flex items-center px-6 py-3.5 text-sm font-medium transition-colors duration-200 <%= category === cat.name ? 'active-nav' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' %>">
+                        <i class="fas <%= cat.icon %> w-6 text-lg <%= category === cat.name ? 'text-emerald-600' : 'text-gray-400' %>"></i> <%= cat.label %>
+                    </a>
+                <% }) %>
+            </nav>
+        </div>
+        <div class="p-6 border-t border-gray-100 bg-gray-50/50">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Data Source</p>
+            <div class="flex bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
+                <a href="/app?source=linkedin&category=<%= category %>" class="flex-1 py-2 text-center rounded-md text-xs font-bold transition <%= source === 'linkedin' ? 'bg-[#0077b5] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50' %>"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a href="/app?source=twitter&category=<%= category %>" class="flex-1 py-2 text-center rounded-md text-xs font-bold transition <%= source === 'twitter' ? 'bg-black text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50' %>"><i class="fab fa-twitter"></i> X / Twitter</a>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <div class="h-24"></div>
-
-    <div class="container mx-auto px-4 py-8 max-w-6xl relative z-10">
+    <main class="flex-1 h-full overflow-y-auto bg-[#f8fafc] relative w-full">
         
-        <div class="bg-white rounded-3xl shadow-xl shadow-emerald-900/5 p-1 border border-white/50">
-            <div class="bg-gradient-to-b from-white to-emerald-50/30 rounded-[1.3rem] p-6 md:p-8">
-                
-                <form action="/app" method="GET" class="flex flex-col gap-8">
-                    
-                    <div class="flex justify-center">
-                        <div class="inline-flex bg-gray-100/80 p-1.5 rounded-2xl border border-gray-200 shadow-inner">
-                            <label class="cursor-pointer relative">
-                                <input type="radio" name="source" value="linkedin" class="peer sr-only" <%= source === 'linkedin' ? 'checked' : '' %> onchange="this.form.submit()">
-                                <div class="px-6 py-2.5 rounded-xl text-gray-500 font-semibold transition-all duration-300 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-md flex items-center gap-2">
-                                    <i class="fas fa-briefcase"></i> <span class="hidden sm:inline">Corporate Jobs</span>
-                                </div>
-                            </label>
-
-                            <label class="cursor-pointer relative">
-                                <input type="radio" name="source" value="twitter" class="peer sr-only" <%= source === 'twitter' ? 'checked' : '' %> onchange="this.form.submit()">
-                                <div class="px-6 py-2.5 rounded-xl text-gray-500 font-semibold transition-all duration-300 peer-checked:bg-white peer-checked:text-black peer-checked:shadow-md flex items-center gap-2">
-                                    <i class="fab fa-twitter"></i> <span class="hidden sm:inline">Direct Hiring</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                        
-                        <div class="md:col-span-4 group">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Search Role</label>
-                            <div class="relative transition-all duration-300 group-focus-within:scale-[1.02]">
-                                <i class="fas fa-search absolute left-4 top-4 text-emerald-500/60"></i>
-                                <input type="text" name="keyword" value="<%= searchParams.keyword %>" class="w-full pl-11 p-3.5 rounded-2xl bg-white border border-gray-200 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition font-medium text-gray-700 shadow-sm" placeholder="e.g. ESG Analyst">
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-3 group">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Work Mode</label>
-                            <div class="relative">
-                                <i class="fas fa-laptop-house absolute left-4 top-4 text-emerald-500/60"></i>
-                                <select name="work_type" class="w-full pl-11 p-3.5 rounded-2xl bg-white border border-gray-200 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition font-medium text-gray-700 shadow-sm cursor-pointer appearance-none">
-                                    <option value="">Any Type</option>
-                                    <option value="Remote" <%= searchParams.work_type === 'Remote' ? 'selected' : '' %>>Remote</option>
-                                    <option value="Hybrid" <%= searchParams.work_type === 'Hybrid' ? 'selected' : '' %>>Hybrid</option>
-                                    <option value="On-site" <%= searchParams.work_type === 'On-site' ? 'selected' : '' %>>On-site</option>
-                                </select>
-                                <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-300 text-xs pointer-events-none"></i>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-3 group">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Location</label>
-                            <div class="relative">
-                                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-emerald-500/60"></i>
-                                <select name="location" class="w-full pl-11 p-3.5 rounded-2xl bg-white border border-gray-200 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition font-medium text-gray-700 shadow-sm cursor-pointer appearance-none">
-                                    <option value="India" <%= searchParams.location === 'India' ? 'selected' : '' %>>India</option>
-                                    <option value="USA" <%= searchParams.location === 'USA' ? 'selected' : '' %>>USA</option>
-                                    <option value="UK" <%= searchParams.location === 'UK' ? 'selected' : '' %>>UK</option>
-                                </select>
-                                <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-300 text-xs pointer-events-none"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="md:col-span-2 flex gap-2 items-end">
-                            <button type="submit" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition transform active:scale-95 flex items-center justify-center">
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                            
-                            <button type="submit" name="refresh" value="true" class="bg-orange-500 hover:bg-orange-400 text-white font-bold py-3.5 px-5 rounded-2xl shadow-lg shadow-orange-500/20 transition transform active:scale-95" title="Force Refresh">
-                                <i class="fas fa-sync-alt animate-spin-slow"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
+        <div class="md:hidden h-16 bg-white/90 backdrop-blur-md border-b flex items-center justify-between px-4 sticky top-0 z-50 shadow-sm">
+            <span class="font-bold text-lg flex items-center gap-2"><i class="fas fa-leaf text-emerald-500"></i> EcoCareers</span>
+            <div class="flex bg-gray-100 rounded-lg p-1">
+                <a href="/app?source=linkedin&category=<%= category %>" class="px-3 py-1 rounded text-xs font-bold <%= source === 'linkedin' ? 'bg-[#0077b5] text-white shadow' : 'text-gray-500' %>"><i class="fab fa-linkedin"></i></a>
+                <a href="/app?source=twitter&category=<%= category %>" class="px-3 py-1 rounded text-xs font-bold <%= source === 'twitter' ? 'bg-black text-white shadow' : 'text-gray-500' %>"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
-    </div>
 
-    <div class="container mx-auto px-4 py-4 flex-grow max-w-6xl">
-        
-        <% if(error || results.length === 0) { %>
-            <div class="flex flex-col items-center justify-center py-20 bg-white/50 backdrop-blur-sm rounded-3xl border border-dashed border-emerald-200/50 text-center animate-pulse">
-                <div class="bg-white p-6 rounded-full shadow-sm mb-6">
-                    <i class="fas fa-search text-4xl text-emerald-200"></i>
+        <div class="md:hidden bg-white border-b border-gray-100 overflow-x-auto whitespace-nowrap sticky top-16 z-40 py-3 px-4 no-scrollbar shadow-sm">
+            <% categories.forEach(cat => { %>
+                <a href="/app?source=<%= source %>&category=<%= cat.name %>" 
+                   class="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold mr-2 border transition-all duration-300
+                   <%= category === cat.name ? 'mobile-active' : 'bg-slate-50 text-slate-600 border-slate-200' %>">
+                    <i class="fas <%= cat.icon %> mr-2"></i> <%= cat.label %>
+                </a>
+            <% }) %>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-7xl mx-auto">
+            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-5">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight"><%= category %> Jobs</h1>
+                    <p class="text-xs md:text-sm text-gray-500 flex items-center gap-2 mt-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Scanning live feed (Last 60 Days)</p>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-700">Starting Search...</h3>
-                <p class="text-gray-400 mt-2 max-w-sm">We are scanning LinkedIn & X (Twitter) for the best opportunities.</p>
+                <div class="flex flex-col md:flex-row gap-3 w-full xl:w-auto items-stretch md:items-center">
+                    <form action="/app" method="GET" class="flex gap-2 w-full md:w-auto">
+                        <input type="hidden" name="source" value="<%= source %>">
+                        <div class="relative w-full md:w-72">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="category" placeholder="Search role..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium focus:outline-none focus:border-emerald-500 shadow-sm" value="<%= category %>">
+                        </div>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-sm">Search</button>
+                    </form>
+                    <a href="/app?source=<%= source %>&category=<%= category %>&refresh=true" class="bg-white border border-gray-200 text-gray-600 hover:text-emerald-600 px-6 py-3 rounded-xl text-sm font-bold shadow-sm flex items-center justify-center gap-2"><i class="fas fa-sync-alt"></i> Refresh</a>
+                </div>
             </div>
-        <% } else { %>
-            
-            <div id="jobs-container" class="grid gap-6 <%= source === 'linkedin' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2' %>">
-                
-                <% if(source === 'linkedin') { %>
+
+            <% if(error || results.length === 0) { %>
+                <div class="flex flex-col items-center justify-center py-20 text-center px-4">
+                    <div class="bg-white p-6 rounded-full shadow-sm mb-4"><i class="fas fa-search text-4xl text-gray-300"></i></div>
+                    <h3 class="text-lg font-bold text-gray-700">No Fresh Posts Found</h3>
+                    <p class="text-sm text-gray-400 mt-2">Try refreshing to fetch new API data.</p>
+                </div>
+            <% } else { %>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-6 pb-20">
                     <% results.forEach((job, index) => { %>
-                        <div class="job-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-1 transition-all duration-300 group relative hidden fade-in" data-index="<%= index %>">
-                            
-                            <div class="flex justify-between items-start mb-5">
-                                <div class="flex-1 pr-4">
-                                    <h3 class="font-bold text-xl text-gray-800 group-hover:text-emerald-600 transition leading-snug line-clamp-2 mb-1"><%= job.job_title %></h3>
-                                    <p class="text-sm font-medium text-gray-500 flex items-center gap-1.5">
-                                        <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider"><%= job.employer_name.substring(0,12) %></span>
-                                    </p>
-                                </div>
-                                <div class="w-14 h-14 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center p-2 flex-shrink-0 group-hover:scale-105 transition">
-                                    <img src="<%= job.employer_logo || 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' %>" class="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2910/2910791.png'">
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-gray-500 mb-6">
-                                <span class="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-100">
-                                    <i class="fas fa-map-marker-alt"></i> <%= job.job_city || 'Remote' %>
-                                </span>
-                                <span class="flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-100">
-                                    <i class="fas fa-check-circle"></i> Verified
-                                </span>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
-                                <a href="/job?id=<%= encodeURIComponent(job.job_id) %>" class="flex items-center justify-center py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 hover:text-gray-900 transition">
-                                    Details
-                                </a>
-                                <a href="<%= job.job_apply_link %>" target="_blank" class="flex items-center justify-center py-3 rounded-xl bg-gray-900 text-white font-bold text-sm hover:bg-black shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
-                                    Apply Now <i class="fas fa-external-link-alt ml-2 text-xs opacity-70"></i>
-                                </a>
-                            </div>
-                        </div>
-                    <% }) %>
-
-                <% } else { %>
-                    <% results.forEach((tweet, index) => { %>
-                        <div class="job-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 hidden fade-in flex flex-col h-full relative group" data-index="<%= index %>">
-                            
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white font-bold text-xl shadow-md ring-4 ring-gray-50 flex-shrink-0">
-                                    X
-                                </div>
+                        <div class="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm card-hover transition-all duration-300 flex flex-col h-full relative group job-card-container">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0 <%= source === 'linkedin' ? 'bg-[#0077b5]' : 'bg-black' %>"><i class="fab <%= source === 'linkedin' ? 'fa-linkedin-in' : 'fa-twitter' %>"></i></div>
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="font-bold text-gray-900 text-base truncate">
-                                        <%= tweet.name || 'Twitter User' %> 
-                                        <i class="fas fa-check-circle text-blue-500 text-xs ml-1"></i>
-                                    </h4>
-                                    <p class="text-xs text-gray-500 font-medium truncate">@<%= tweet.screen_name %></p>
-                                </div>
-                                <div class="bg-blue-50 p-2 rounded-full text-blue-500">
-                                    <i class="fab fa-twitter text-lg"></i>
+                                    <h4 class="font-bold text-gray-900 text-sm md:text-base truncate"><%= source === 'linkedin' ? 'LinkedIn Recruiter' : 'Twitter Recruiter' %> <i class="fas fa-check-circle text-blue-500 text-xs ml-1"></i></h4>
+                                    <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wide"><%= category %> HIRING</p>
                                 </div>
                             </div>
-
-                            <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-100 mb-6 flex-grow relative group-hover:bg-blue-50/30 transition">
-                                <i class="fas fa-quote-left absolute top-3 left-3 text-gray-200 text-2xl -z-10"></i>
-                                <p class="text-gray-800 text-sm leading-relaxed whitespace-pre-line font-medium text-ellipsis overflow-hidden">
-                                    <%= tweet.text %>
-                                </p>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4 md:mb-6 flex-grow h-auto md:h-32 overflow-hidden relative">
+                                <p class="text-slate-700 text-xs md:text-sm leading-relaxed font-medium line-clamp-4"><%= job.text %></p>
+                                <div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-slate-50 to-transparent"></div>
+                                <div class="hidden full-post-text"><%= job.text %></div>
+                                <div class="hidden full-post-link"><%= job.link %></div>
+                                <div class="hidden full-post-source"><%= source %></div>
+                                <div class="hidden full-post-employer"><%= job.employer_name %></div>
                             </div>
-
-                            <div class="grid grid-cols-2 gap-3 mt-auto pt-2">
-                                
-                                <button onclick="navigator.clipboard.writeText('<%= tweet.text %>'); alert('Details copied!');" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold hover:bg-gray-200 transition flex items-center justify-center gap-2 group/btn">
-                                    <i class="far fa-copy group-hover/btn:scale-110 transition"></i> Copy
-                                </button>
-                                
-                                <a href="https://x.com/<%= tweet.screen_name %>/status/<%= tweet.tweet_id || tweet.id_str %>" target="_blank" class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold hover:bg-gray-900 transition flex items-center justify-center gap-2 shadow-lg group/btn">
-                                    View on X <i class="fas fa-external-link-alt group-hover/btn:translate-x-1 transition"></i>
-                                </a>
-
+                            <div class="grid grid-cols-2 gap-3 mt-auto">
+                                <button onclick="openModal(this)" class="w-full py-2.5 rounded-lg bg-white border border-gray-200 text-gray-600 text-xs font-bold hover:bg-gray-50 transition flex items-center justify-center gap-2"><i class="fas fa-expand-alt"></i> Read Full</button>
+                                <a href="<%= job.link %>" target="_blank" class="w-full py-2.5 rounded-lg text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-md <%= source === 'linkedin' ? 'bg-[#0077b5]' : 'bg-black' %>">View Post <i class="fas fa-external-link-alt"></i></a>
                             </div>
                         </div>
                     <% }) %>
-                <% } %>
-            </div>
+                </div>
+            <% } %>
+        </div>
+    </main>
 
-            <div class="flex justify-center items-center gap-6 mt-16 pb-12 select-none">
-                <button id="prevBtn" onclick="changePage(-1)" class="w-12 h-12 rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition disabled:opacity-30 disabled:cursor-not-allowed">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                
-                <span class="font-bold text-gray-400 text-sm tracking-widest">
-                    PAGE <span id="currentPageDisplay" class="text-emerald-600 text-lg mx-1">1</span> / <span id="totalPagesDisplay">1</span>
-                </span>
-                
-                <button id="nextBtn" onclick="changePage(1)" class="w-12 h-12 rounded-full bg-emerald-600 border border-emerald-600 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
+    <div id="readModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 scale-95" id="modalPanel">
+                    <div id="modalContent"></div>
+                </div>
             </div>
-
-        <% } %>
+        </div>
     </div>
 
     <script>
-        const cardsPerPage = 10;
-        let currentPage = 1;
-        const allCards = document.querySelectorAll('.job-card');
-        const totalCards = allCards.length;
-        const totalPages = Math.ceil(totalCards / cardsPerPage);
+        const modal = document.getElementById('readModal');
+        const backdrop = document.getElementById('modalBackdrop');
+        const panel = document.getElementById('modalPanel');
+        const modalContent = document.getElementById('modalContent');
 
-        function showPage(page) {
-            if (totalCards === 0) return;
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-            currentPage = page;
+        function openModal(btn) {
+            const card = btn.closest('.job-card-container');
+            const text = card.querySelector('.full-post-text').textContent.trim();
+            const link = card.querySelector('.full-post-link').textContent.trim();
+            const source = card.querySelector('.full-post-source').textContent.trim();
+            const employer = card.querySelector('.full-post-employer').textContent.trim();
+            let html = '';
 
-            const start = (page - 1) * cardsPerPage;
-            const end = start + cardsPerPage;
-
-            allCards.forEach((card, index) => {
-                if (index >= start && index < end) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-
-            document.getElementById('currentPageDisplay').innerText = currentPage;
-            document.getElementById('totalPagesDisplay').innerText = totalPages;
-            document.getElementById('prevBtn').disabled = (currentPage === 1);
-            document.getElementById('nextBtn').disabled = (currentPage === totalPages);
-
-            // --- SCROLL FIX START ---
-            const resultsDiv = document.getElementById('jobs-container');
-            if(resultsDiv) {
-                const yOffset = -140; 
-                const y = resultsDiv.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({top: y, behavior: 'smooth'});
+            if(source.includes('linkedin')) {
+                html = `
+                    <div class="bg-white font-['Roboto'] text-sm text-gray-900">
+                        <div class="flex items-start gap-3 p-4 border-b border-gray-100 pb-3">
+                            <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300"><i class="fas fa-user text-gray-400 text-xl"></i></div>
+                            <div class="flex-1"><h3 class="font-bold text-[14px] leading-tight hover:underline hover:text-[#0077b5] cursor-pointer">${employer} <span class="text-gray-500 font-normal">• 2nd</span></h3><p class="text-[12px] text-gray-500 leading-tight mt-0.5 w-60 truncate">Recruiter • Hiring Manager</p><p class="text-[12px] text-gray-500 mt-0.5 flex items-center gap-1"><span class="text-xs">2d • </span> <i class="fas fa-globe-americas text-[10px]"></i></p></div>
+                            <button onclick="closeModal()" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+                        <div class="p-4 pt-3 text-[14px] leading-relaxed whitespace-pre-wrap text-black">${text}<br><br><span class="text-gray-400 text-xs italic">... (Click 'View Post' for more)</span></div>
+                        <div class="px-4 py-2 border-t border-gray-100 flex justify-between text-gray-500 text-xs font-bold"><button class="flex items-center gap-2 hover:bg-gray-100 px-4 py-3 rounded flex-1 justify-center"><i class="far fa-thumbs-up text-lg"></i> Like</button><button class="flex items-center gap-2 hover:bg-gray-100 px-4 py-3 rounded flex-1 justify-center"><i class="far fa-comment-dots text-lg"></i> Comment</button><button class="flex items-center gap-2 hover:bg-gray-100 px-4 py-3 rounded flex-1 justify-center"><i class="fas fa-share text-lg"></i> Share</button></div>
+                        <div class="p-4 bg-gray-50"><a href="${link}" target="_blank" class="block w-full text-center bg-[#0077b5] text-white font-bold py-2 rounded-full hover:bg-[#006097] transition">View Full Post on LinkedIn</a></div>
+                    </div>`;
+            } else {
+                html = `
+                    <div class="bg-white font-sans text-base text-gray-900">
+                        <div class="flex justify-between items-start p-4 pb-0"><div class="flex gap-3"><div class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white"><i class="fab fa-twitter"></i></div><div><h3 class="font-bold text-[15px] leading-tight flex items-center gap-1">${employer} <i class="fas fa-certificate text-blue-400 text-xs"></i></h3><p class="text-[14px] text-gray-500">@${employer.replace(/\s/g,'').toLowerCase()}</p></div></div><button onclick="closeModal()" class="text-gray-900 hover:bg-gray-100 p-2 rounded-full"><i class="fas fa-times text-lg"></i></button></div>
+                        <div class="p-4 text-[17px] leading-snug whitespace-pre-wrap text-black">${text}</div>
+                        <div class="px-4 pb-3 text-gray-500 text-[14px]">10:30 AM · Recent · <span class="font-bold text-black">Views</span></div>
+                        <div class="border-t border-b border-gray-100 px-4 py-3 flex gap-6 text-sm"><span class="text-gray-500"><strong class="text-black">12</strong> Reposts</span><span class="text-gray-500"><strong class="text-black">45</strong> Likes</span></div>
+                        <div class="px-4 py-3 flex justify-between text-gray-500 text-lg border-b border-gray-100"><i class="far fa-comment hover:text-blue-500"></i><i class="fas fa-retweet hover:text-green-500"></i><i class="far fa-heart hover:text-pink-500"></i><i class="far fa-bookmark hover:text-blue-500"></i></div>
+                        <div class="p-4"><a href="${link}" target="_blank" class="block w-full text-center bg-black text-white font-bold py-3 rounded-full hover:bg-gray-800 transition">View Full Post on X</a></div>
+                    </div>`;
             }
-            // --- SCROLL FIX END ---
+            modalContent.innerHTML = html;
+            modal.classList.remove('hidden');
+            setTimeout(() => { backdrop.classList.remove('opacity-0'); panel.classList.remove('opacity-0', 'scale-95'); panel.classList.add('opacity-100', 'scale-100'); }, 10);
         }
-
-        function changePage(dir) { showPage(currentPage + dir); }
-        if (totalCards > 0) showPage(1);
+        function closeModal() {
+            backdrop.classList.add('opacity-0'); panel.classList.remove('opacity-100', 'scale-100'); panel.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 200);
+        }
     </script>
 </body>
 </html>
